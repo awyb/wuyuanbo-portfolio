@@ -6,197 +6,156 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 const GRID_WIDTH = 3; // 3列
 const GRID_HEIGHT = 12; // 12行
 const CELL_SIZE = 60;
-const INITIAL_DROP_SPEED = 800; // ms
 const STACK_WARNING_HEIGHT = 8; // 警戒线高度
 
 // 方块类型
 interface Block {
   id: string;
-  value: number; // 2, 4, 8, 16, 32...
+  value: number;
   row: number;
   col: number;
-  isNew?: boolean;
-  isAnimating?: boolean;
-}
-
-interface GameGrid {
-  [key: string]: Block | null;
 }
 
 export default function NumberStack() {
   // 游戏状态
-  const [grid, setGrid] = useState<GameGrid>({});
+  const [blocks, setBlocks] = useState<Block[]>([]);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
-  const [dropSpeed, setDropSpeed] = useState(INITIAL_DROP_SPEED);
   const [nextBlock, setNextBlock] = useState<{
     value: number;
     col: number;
   } | null>(null);
-  const [comboCount, setComboCount] = useState(0);
-  const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
-  const dropLoopRef = useRef<NodeJS.Timeout | null>(null);
 
   // 生成随机方块
   const generateRandomBlock = useCallback(() => {
-    const value = Math.random() < 0.8 ? 2 : 4; // 80% 概率生成2，20% 概率生成4
+    const value = Math.random() < 0.8 ? 2 : 4;
     const col = Math.floor(Math.random() * GRID_WIDTH);
     return { value, col };
   }, []);
 
   // 初始化游戏
   const initializeGame = useCallback(() => {
-    setGrid({});
+    setBlocks([]);
     setScore(0);
     setGameOver(false);
     setGameStarted(true);
-    setDropSpeed(INITIAL_DROP_SPEED);
-    setComboCount(0);
     setNextBlock(generateRandomBlock());
   }, [generateRandomBlock]);
 
-  // 获取网格键
-  const getGridKey = (row: number, col: number) => `${row}-${col}`;
-
-  // 获取列中最低的空行
-  const getLowestEmptyRow = useCallback(
-    (col: number) => {
-      for (let row = GRID_HEIGHT - 1; row >= 0; row--) {
-        if (!grid[getGridKey(row, col)]) {
-          return row;
+  // 获取列中最低的行
+  const getLowestRow = useCallback(
+    (col: number, currentBlocks: Block[]): number => {
+      let maxRow = GRID_HEIGHT - 1;
+      for (const block of currentBlocks) {
+        if (block.col === col && block.row < maxRow) {
+          maxRow = block.row - 1;
         }
       }
-      return -1; // 列已满
+      return maxRow;
     },
-    [grid],
+    [],
   );
 
-  // 检查游戏是否结束
-  const checkGameOver = useCallback((currentGrid: GameGrid) => {
-    // 检查顶部是否有方块
-    for (let col = 0; col < GRID_WIDTH; col++) {
-      if (currentGrid[getGridKey(0, col)]) {
-        return true;
-      }
-    }
-    return false;
-  }, []);
+  // 检查并合并方块
+  const checkAndMergeBlocks = useCallback((currentBlocks: Block[]): Block[] => {
+    let newBlocks = [...currentBlocks];
+    let merged = true;
+    let scoreGain = 0;
 
-  // 检查并消除可合并的方块
-  const checkAndMergeBlocks = useCallback((currentGrid: GameGrid): GameGrid => {
-    const newGrid = { ...currentGrid };
-    let merged = false;
-    let newScore = 0;
+    while (merged) {
+      merged = false;
 
-    // 遍历所有方块，查找可合并的
-    const blockEntries = Object.entries(newGrid).filter(
-      ([_, block]) => block !== null,
-    );
+      for (let i = 0; i < newBlocks.length; i++) {
+        for (let j = i + 1; j < newBlocks.length; j++) {
+          const block1 = newBlocks[i];
+          const block2 = newBlocks[j];
 
-    for (let i = 0; i < blockEntries.length; i++) {
-      const [key1, block1] = blockEntries[i] as [string, Block];
-      if (!block1) continue;
+          // 检查是否相邻且相同
+          if (
+            block1.value === block2.value &&
+            block1.col === block2.col &&
+            Math.abs(block1.row - block2.row) === 1
+          ) {
+            // 合并
+            const mergedRow = Math.min(block1.row, block2.row);
+            const mergedValue = block1.value * 2;
+            scoreGain += mergedValue * 10;
 
-      for (let j = i + 1; j < blockEntries.length; j++) {
-        const [key2, block2] = blockEntries[j] as [string, Block];
-        if (!block2) continue;
+            // 移除旧方块，添加新方块
+            newBlocks = newBlocks.filter((_, idx) => idx !== i && idx !== j);
+            newBlocks.push({
+              id: `merged-${Date.now()}-${Math.random()}`,
+              value: mergedValue,
+              row: mergedRow,
+              col: block1.col,
+            });
 
-        // 检查是否相邻且相同
-        if (
-          block1.value === block2.value &&
-          Math.abs(block1.row - block2.row) +
-            Math.abs(block1.col - block2.col) ===
-            1
-        ) {
-          // 合并方块
-          const mergedValue = block1.value * 2;
-          const mergedRow = Math.min(block1.row, block2.row);
-          const mergedCol =
-            block1.col === block2.col
-              ? block1.col
-              : Math.min(block1.col, block2.col);
-
-          newGrid[key1] = null;
-          newGrid[key2] = null;
-          newGrid[getGridKey(mergedRow, mergedCol)] = {
-            id: `merged-${Date.now()}-${Math.random()}`,
-            value: mergedValue,
-            row: mergedRow,
-            col: mergedCol,
-            isNew: true,
-          };
-
-          newScore += mergedValue * 10;
-          merged = true;
+            merged = true;
+            break;
+          }
         }
+        if (merged) break;
       }
     }
 
-    if (merged) {
-      setScore((prev) => prev + newScore);
-      setComboCount((prev) => prev + 1);
-      // 递归检查是否还有可合并的
-      return checkAndMergeBlocks(newGrid);
+    if (scoreGain > 0) {
+      setScore((prev) => {
+        const newScore = prev + scoreGain;
+        setHighScore((prevHigh) => Math.max(prevHigh, newScore));
+        return newScore;
+      });
     }
 
-    return newGrid;
+    return newBlocks;
   }, []);
 
   // 放置方块
   const placeBlock = useCallback(
-    (block: { value: number; col: number }) => {
-      const row = getLowestEmptyRow(block.col);
+    (col: number) => {
+      if (!gameStarted || gameOver || !nextBlock) return;
 
-      if (row === -1) {
-        // 列已满，游戏结束
+      const lowestRow = getLowestRow(col, blocks);
+
+      if (lowestRow < 0) {
+        // 列已满
         setGameOver(true);
         return;
       }
 
       const newBlock: Block = {
         id: `block-${Date.now()}-${Math.random()}`,
-        value: block.value,
-        row,
-        col: block.col,
-        isNew: true,
+        value: nextBlock.value,
+        row: lowestRow,
+        col: col,
       };
 
-      setGrid((prevGrid) => {
-        const newGrid = { ...prevGrid };
-        newGrid[getGridKey(row, block.col)] = newBlock;
+      const newBlocks = [...blocks, newBlock];
+      const mergedBlocks = checkAndMergeBlocks(newBlocks);
 
-        // 检查并合并
-        const mergedGrid = checkAndMergeBlocks(newGrid);
+      // 检查是否超过警戒线
+      const maxHeight = mergedBlocks.reduce(
+        (max, block) => Math.min(max, block.row),
+        GRID_HEIGHT,
+      );
+      if (maxHeight < 0) {
+        setGameOver(true);
+        return;
+      }
 
-        // 检查游戏是否结束
-        if (checkGameOver(mergedGrid)) {
-          setGameOver(true);
-        }
-
-        return mergedGrid;
-      });
-
-      // 生成下一个方块
+      setBlocks(mergedBlocks);
       setNextBlock(generateRandomBlock());
-      setComboCount(0);
     },
     [
-      getLowestEmptyRow,
+      gameStarted,
+      gameOver,
+      nextBlock,
+      blocks,
+      getLowestRow,
       checkAndMergeBlocks,
-      checkGameOver,
       generateRandomBlock,
     ],
-  );
-
-  // 处理放置方块
-  const handlePlaceBlock = useCallback(
-    (col: number) => {
-      if (!gameStarted || gameOver || !nextBlock) return;
-      placeBlock(nextBlock);
-    },
-    [gameStarted, gameOver, nextBlock, placeBlock],
   );
 
   // 处理键盘输入
@@ -214,11 +173,20 @@ export default function NumberStack() {
         return;
       }
 
-      if (e.key === "1") handlePlaceBlock(0);
-      if (e.key === "2") handlePlaceBlock(1);
-      if (e.key === "3") handlePlaceBlock(2);
+      if (e.key === "1") {
+        e.preventDefault();
+        placeBlock(0);
+      }
+      if (e.key === "2") {
+        e.preventDefault();
+        placeBlock(1);
+      }
+      if (e.key === "3") {
+        e.preventDefault();
+        placeBlock(2);
+      }
     },
-    [gameStarted, gameOver, initializeGame, handlePlaceBlock],
+    [gameStarted, gameOver, initializeGame, placeBlock],
   );
 
   // 监听键盘事件
@@ -227,18 +195,8 @@ export default function NumberStack() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleKeyPress]);
 
-  // 自动下落逻辑（可选）
-  useEffect(() => {
-    if (!gameStarted || gameOver) return;
-
-    // 可以在这里添加自动下落的逻辑
-    // 目前是点击放置模式
-  }, [gameStarted, gameOver]);
-
   // 重置游戏
   const resetGame = useCallback(() => {
-    if (gameLoopRef.current) clearInterval(gameLoopRef.current);
-    if (dropLoopRef.current) clearInterval(dropLoopRef.current);
     initializeGame();
   }, [initializeGame]);
 
@@ -260,19 +218,14 @@ export default function NumberStack() {
     return colors[value] || "bg-gray-500";
   };
 
-  // 获取最高的方块
-  const getMaxHeight = (): number => {
-    let maxRow = -1;
-    Object.values(grid).forEach((block) => {
-      if (block && block.row < maxRow) {
-        maxRow = block.row;
-      }
-    });
-    return maxRow === -1 ? GRID_HEIGHT : GRID_HEIGHT - maxRow;
+  // 获取最高的方块（最小行号）
+  const getMinRow = (): number => {
+    if (blocks.length === 0) return GRID_HEIGHT;
+    return Math.min(...blocks.map((b) => b.row));
   };
 
-  const maxHeight = getMaxHeight();
-  const isWarning = maxHeight >= STACK_WARNING_HEIGHT;
+  const minRow = getMinRow();
+  const isWarning = minRow <= GRID_HEIGHT - STACK_WARNING_HEIGHT;
 
   return (
     <div className="mx-auto w-full max-w-md">
@@ -314,26 +267,23 @@ export default function NumberStack() {
         />
 
         {/* 方块 */}
-        {Object.entries(grid).map(([key, block]) => {
-          if (!block) return null;
-          return (
-            <div
-              key={block.id}
-              className={`absolute flex transform items-center justify-center rounded-lg font-bold text-white transition-all ${getBlockColor(
-                block.value,
-              )} ${block.isNew ? "scale-110" : "scale-100"}`}
-              style={{
-                left: block.col * CELL_SIZE + 2,
-                top: block.row * CELL_SIZE + 2,
-                width: CELL_SIZE - 4,
-                height: CELL_SIZE - 4,
-                fontSize: block.value > 128 ? "20px" : "24px",
-              }}
-            >
-              {block.value}
-            </div>
-          );
-        })}
+        {blocks.map((block) => (
+          <div
+            key={block.id}
+            className={`absolute flex items-center justify-center rounded-lg font-bold text-white transition-all ${getBlockColor(
+              block.value,
+            )}`}
+            style={{
+              left: block.col * CELL_SIZE + 2,
+              top: block.row * CELL_SIZE + 2,
+              width: CELL_SIZE - 4,
+              height: CELL_SIZE - 4,
+              fontSize: block.value > 128 ? "20px" : "24px",
+            }}
+          >
+            {block.value}
+          </div>
+        ))}
 
         {/* 网格线 */}
         <svg
@@ -443,7 +393,7 @@ export default function NumberStack() {
           {Array.from({ length: 3 }).map((_, col) => (
             <button
               key={col}
-              onClick={() => handlePlaceBlock(col)}
+              onClick={() => placeBlock(col)}
               disabled={!gameStarted || gameOver}
               className={`transform rounded-lg px-3 py-4 font-bold text-white transition-all active:scale-95 ${
                 gameStarted && !gameOver

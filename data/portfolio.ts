@@ -2,7 +2,7 @@ import { Project, Skill, BlogPost, Tool, SocialLink } from "@/types";
 
 // 个人信息
 export const personalInfo = {
-  name: "吴远波",
+  name: "吴元波",
   title: "全栈开发工程师",
   bio: "热爱编程和开源，专注于构建高质量的 Web 应用程序",
   email: "your-email@example.com",
