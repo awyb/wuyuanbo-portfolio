@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 // --- 游戏常量 ---
-const GRID_SIZE = 40; // 40x40 的网格
-const INITIAL_SPEED = 160; // 初始速度
-const MIN_SPEED = 80; // 最快速度
+const GRID_SIZE = 25; // 40x40 的网格
+const INITIAL_SPEED = 200; // 初始速度
+const MIN_SPEED = 50; // 最快速度
 // --- 类型定义 ---
 type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 interface Position {
