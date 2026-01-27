@@ -1,73 +1,42 @@
-import Link from 'next/link';
-import { tools } from '@/data/portfolio';
+import Link from 'next/link'
+import { tools } from '@/data/portfolio'
 
 export const metadata = {
   title: '工具 - 吴元波',
-  description: '我开发的实用工具和小游戏',
-};
+  description: '我开发的实用工具',
+}
 
 export default function ToolsPage() {
-  const toolsList = tools.filter((tool) => tool.category === 'tool');
-  const gamesList = tools.filter((tool) => tool.category === 'game');
+  const toolsList = tools.filter(tool => tool.category === 'tool')
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-20">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
-          工具 & 游戏
-        </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400 mb-12">
-          一些实用的工具和有趣的小游戏。
+    <div className="min-h-screen bg-white py-20 dark:bg-gray-900">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <h1 className="mb-4 text-5xl font-bold text-gray-900 dark:text-white">🛠️ 实用工具</h1>
+        <p className="mb-12 text-xl text-gray-600 dark:text-gray-400">
+          一些实用的工具，提高工作效率。
         </p>
 
         {/* Tools Section */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-            🛠️ 工具
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {toolsList.map((tool) => (
-              <Link
-                key={tool.id}
-                href={tool.link}
-                className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow"
-              >
-                <div className="text-4xl mb-4">{tool.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  {tool.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {tool.description}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Games Section */}
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-            🎮 游戏
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {gamesList.map((game) => (
-              <Link
-                key={game.id}
-                href={game.link}
-                className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow"
-              >
-                <div className="text-4xl mb-4">{game.icon}</div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                  {game.title}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {game.description}
-                </p>
-              </Link>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {toolsList.map(tool => (
+            <Link
+              key={tool.id}
+              href={tool.link}
+              className="bg-linear-to-br flex flex-col items-center rounded-lg from-gray-50 to-gray-100 p-8 text-center transition-shadow hover:shadow-xl dark:from-gray-800 dark:to-gray-900"
+            >
+              <div className="mb-4 text-6xl">{tool.icon}</div>
+              <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+                {tool.title}
+              </h2>
+              <p className="mb-4 grow text-gray-600 dark:text-gray-400">{tool.description}</p>
+              <span className="inline-block rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700">
+                使用工具 →
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
-  );
+  )
 }

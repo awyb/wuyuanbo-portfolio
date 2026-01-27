@@ -1,33 +1,29 @@
-import Link from 'next/link';
-import { Project } from '@/types';
+import Link from 'next/link'
+import { Project } from '@/types'
 
 interface ProjectCardProps {
-  project: Project;
+  project: Project
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+    <div className="flex flex-col overflow-hidden rounded-lg bg-white shadow-lg transition-shadow hover:shadow-xl dark:bg-gray-800">
       {/* Image */}
-      <div className="h-48 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-        <span className="text-white text-4xl">📦</span>
+      <div className="bg-linear-to-br flex h-48 items-center justify-center from-blue-400 to-purple-500">
+        <span className="text-4xl text-white">📦</span>
       </div>
 
       {/* Content */}
-      <div className="p-6">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          {project.title}
-        </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          {project.description}
-        </p>
+      <div className="flex grow flex-col p-6">
+        <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">{project.title}</h3>
+        <p className="mb-4 grow text-gray-600 dark:text-gray-400">{project.description}</p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.tags.map((tag) => (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {project.tags.map(tag => (
             <span
               key={tag}
-              className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full"
+              className="inline-block rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-800 dark:bg-blue-900 dark:text-blue-200"
             >
               {tag}
             </span>
@@ -36,20 +32,18 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Links */}
         <div className="flex gap-3">
-          {project.link && (
-            <Link
-              href={project.link}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
-            >
-              查看项目
-            </Link>
-          )}
+          <Link
+            href={project.link || '#'}
+            className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-center text-white transition-colors hover:bg-blue-700"
+          >
+            查看项目
+          </Link>
           {project.github && (
             <a
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-center"
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-center text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               GitHub
             </a>
@@ -57,5 +51,5 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

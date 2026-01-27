@@ -1,27 +1,41 @@
-import { skills } from '@/data/portfolio';
+import { sql } from '@/lib/db'
 
-export default function Skills() {
+interface SkillRow {
+  id: string
+  category: string
+  items: string[]
+  created_at: string
+}
+
+async function getSkills() {
+  const skills = await sql`
+    SELECT * FROM skills 
+    ORDER BY category
+  `
+  return (skills as SkillRow[]) || []
+}
+
+export default async function Skills() {
+  const skills = await getSkills()
+
   return (
-    <section className="py-20 bg-white dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">
+    <section className="bg-white py-20 dark:bg-gray-900">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <h2 className="mb-12 text-center text-4xl font-bold text-gray-900 dark:text-white">
           我的技能
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {skills.map((skillGroup) => (
-            <div
-              key={skillGroup.category}
-              className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6"
-            >
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {skills.map(skillGroup => (
+            <div key={skillGroup.id} className="rounded-lg bg-gray-50 p-6 dark:bg-gray-800">
+              <h3 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
                 {skillGroup.category}
               </h3>
               <div className="flex flex-wrap gap-2">
-                {skillGroup.items.map((item) => (
+                {skillGroup.items.map((item: string) => (
                   <span
                     key={item}
-                    className="px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                    className="rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800 transition-colors hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
                   >
                     {item}
                   </span>
@@ -32,5 +46,5 @@ export default function Skills() {
         </div>
       </div>
     </section>
-  );
+  )
 }

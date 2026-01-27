@@ -1,31 +1,38 @@
-import Link from 'next/link';
-import { projects } from '@/data/portfolio';
-import ProjectCard from '@/components/common/ProjectCard';
+import Link from 'next/link'
+import ProjectCard from '@/components/common/ProjectCard'
+import { sql } from '@/lib/db'
 
-export default function FeaturedProjects() {
-  const featuredProjects = projects.slice(0, 3);
+async function getFeaturedProjects() {
+  const projects = await sql`
+    SELECT * FROM projects 
+    ORDER BY created_at DESC 
+    LIMIT 3
+  `
+  return projects || []
+}
+
+export default async function FeaturedProjects() {
+  const featuredProjects = await getFeaturedProjects()
 
   return (
-    <section className="py-20 bg-gray-50 dark:bg-gray-800">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white">
-            精选作品
-          </h2>
+    <section className="bg-gray-50 py-20 dark:bg-gray-800">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-12 flex items-center justify-between">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white">精选作品</h2>
           <Link
             href="/projects"
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
+            className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
           >
             查看全部 →
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredProjects.map((project) => (
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {featuredProjects.map((project: any) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       </div>
     </section>
-  );
+  )
 }

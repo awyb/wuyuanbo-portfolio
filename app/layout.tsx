@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "吴元波 - 全栈开发工程师",
+  title: "wuyuanbo - 个人主页",
   description: "个人作品集网站，展示项目、技能、博客和小工具",
   keywords: "开发者, 全栈, React, Next.js, TypeScript",
 };
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-white antialiased dark:bg-gray-900`}
       >
         <Navbar />
         <main>{children}</main>

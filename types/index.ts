@@ -34,7 +34,7 @@ export interface Tool {
   description: string;
   icon: string;
   link: string;
-  category: 'tool' | 'game';
+  category: "tool" | "game";
 }
 
 // 社交媒体链接

@@ -1,20 +1,18 @@
-import SnakeGame from "@/components/games/SnakeGame";
+import SnakeGame from '@/components/games/SnakeGame'
 
 export const metadata = {
-  title: "贪吃蛇游戏 - 吴元波",
-  description: "一个有趣的贪吃蛇游戏，支持键盘和触摸控制",
-};
+  title: '贪吃蛇游戏 - 吴元波',
+  description: '一个有趣的贪吃蛇游戏，支持键盘和触摸控制',
+}
 
 export default function SnakePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 px-4 py-12">
+    <div className="bg-linear-to-br min-h-screen from-gray-900 to-gray-800 px-4 py-12">
       <div className="mx-auto max-w-4xl">
         {/* 标题 */}
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-5xl font-bold text-white">🐍 贪吃蛇游戏</h1>
-          <p className="text-xl text-gray-400">
-            一个经典的贪吃蛇游戏，考验你的反应速度和策略能力
-          </p>
+          <p className="text-xl text-gray-400">一个经典的贪吃蛇游戏，考验你的反应速度和策略能力</p>
         </div>
 
         {/* 游戏组件 */}
@@ -28,5 +26,5 @@ export default function SnakePage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
