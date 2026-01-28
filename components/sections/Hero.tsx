@@ -1,7 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 import { personalInfo, socialLinks } from '@/data/portfolio'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function Hero() {
+  const { t } = useLanguage()
   return (
     <section className="bg-linear-to-br flex min-h-screen items-center justify-center from-gray-50 to-gray-100 px-4 dark:from-gray-900 dark:to-gray-800">
       <div className="mx-auto max-w-4xl text-center">
@@ -33,13 +37,13 @@ export default function Hero() {
             href="/projects"
             className="rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
           >
-            查看我的作品
+            {t('hero.viewProjects')}
           </Link>
           <a
             href={`mailto:${personalInfo.email}`}
             className="rounded-lg border-2 border-blue-600 px-8 py-3 font-semibold text-blue-600 transition-colors hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-gray-800"
           >
-            联系我
+            {t('hero.contactMe')}
           </a>
         </div>
 

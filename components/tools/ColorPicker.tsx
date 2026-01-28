@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 // --- 类型定义 ---
 type ColorFormat = 'hex' | 'rgb' | 'hsl'
@@ -33,17 +34,18 @@ const PRESET_COLORS: PresetColor[] = [
 
 // --- 渐变预设 ---
 const GRADIENT_PRESETS = [
-  { name: '日落', colors: ['#FF6B6B', '#FFE66D'] },
-  { name: '海洋', colors: ['#667eea', '#764ba2'] },
-  { name: '森林', colors: ['#11998e', '#38ef7d'] },
-  { name: '火焰', colors: ['#f12711', '#f5af19'] },
-  { name: '午夜', colors: ['#232526', '#414345'] },
-  { name: '极光', colors: ['#00c6ff', '#0072ff'] },
-  { name: '樱花', colors: ['#ff9a9e', '#fecfef'] },
-  { name: '咖啡', colors: ['#614385', '#516395'] },
+  { name: 'sunset', colors: ['#FF6B6B', '#FFE66D'] },
+  { name: 'ocean', colors: ['#667eea', '#764ba2'] },
+  { name: 'forest', colors: ['#11998e', '#38ef7d'] },
+  { name: 'fire', colors: ['#f12711', '#f5af19'] },
+  { name: 'midnight', colors: ['#232526', '#414345'] },
+  { name: 'aurora', colors: ['#00c6ff', '#0072ff'] },
+  { name: 'cherry', colors: ['#ff9a9e', '#fecfef'] },
+  { name: 'coffee', colors: ['#614385', '#516395'] },
 ]
 
 export default function ColorPicker() {
+  const { t } = useLanguage()
   const [hexColor, setHexColor] = useState('#3B82F6')
   const [format, setFormat] = useState<ColorFormat>('hex')
   const [copied, setCopied] = useState(false)
@@ -200,9 +202,11 @@ export default function ColorPicker() {
       {/* 标题 */}
       <div className="text-center">
         <h1 className="bg-linear-to-r mb-2 from-pink-600 to-purple-600 bg-clip-text text-4xl font-black text-transparent">
-          🎨 颜色选择器
+          🎨 {t('tools.colorPicker.title')}
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400">选择、转换和管理你的颜色</p>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+          {t('tools.colorPicker.subtitle')}
+        </p>
       </div>
 
       {/* 主颜色预览 */}
@@ -234,7 +238,7 @@ export default function ColorPicker() {
             onClick={copyToClipboard}
             className="rounded-lg bg-white/20 px-6 py-3 font-bold text-white backdrop-blur-sm transition-all hover:scale-105 hover:bg-white/30"
           >
-            {copied ? '✓ 已复制' : '📋 复制'}
+            {copied ? `✓ ${t('tools.colorPicker.copied')}` : `📋 ${t('tools.colorPicker.copy')}`}
           </button>
         </div>
       </div>
@@ -242,19 +246,25 @@ export default function ColorPicker() {
       {/* 颜色信息 */}
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
-          <h3 className="mb-3 text-sm font-semibold text-gray-600 dark:text-gray-400">HEX</h3>
+          <h3 className="mb-3 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            {t('tools.colorPicker.hex')}
+          </h3>
           <div className="font-mono text-xl font-bold text-gray-900 dark:text-white">
             {hexColor.toUpperCase()}
           </div>
         </div>
         <div className="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
-          <h3 className="mb-3 text-sm font-semibold text-gray-600 dark:text-gray-400">RGB</h3>
+          <h3 className="mb-3 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            {t('tools.colorPicker.rgb')}
+          </h3>
           <div className="font-mono text-xl font-bold text-gray-900 dark:text-white">
             {rgb.r}, {rgb.g}, {rgb.b}
           </div>
         </div>
         <div className="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
-          <h3 className="mb-3 text-sm font-semibold text-gray-600 dark:text-gray-400">HSL</h3>
+          <h3 className="mb-3 text-sm font-semibold text-gray-600 dark:text-gray-400">
+            {t('tools.colorPicker.hsl')}
+          </h3>
           <div className="font-mono text-xl font-bold text-gray-900 dark:text-white">
             {hsl.h}°, {hsl.s}%, {hsl.l}%
           </div>
@@ -263,7 +273,9 @@ export default function ColorPicker() {
 
       {/* 颜色面板选择器 */}
       <div className="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
-        <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">🎨 颜色面板</h3>
+        <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
+          🎨 {t('tools.colorPicker.colorPanel')}
+        </h3>
         <div className="flex flex-col gap-4">
           {/* 色相饱和度面板 */}
           <div
@@ -334,30 +346,36 @@ export default function ColorPicker() {
           onClick={generateRandomColor}
           className="bg-linear-to-r rounded-lg from-purple-500 to-pink-500 px-6 py-3 font-bold text-white shadow-md transition-all hover:scale-105 hover:shadow-lg"
         >
-          🎲 随机颜色
+          🎲 {t('tools.colorPicker.randomColor')}
         </button>
         <button
           onClick={saveColor}
           className="bg-linear-to-r rounded-lg from-blue-500 to-cyan-500 px-6 py-3 font-bold text-white shadow-md transition-all hover:scale-105 hover:shadow-lg"
         >
-          💾 保存颜色
+          💾 {t('tools.colorPicker.saveColor')}
         </button>
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
           className="bg-linear-to-r rounded-lg from-gray-500 to-gray-600 px-6 py-3 font-bold text-white shadow-md transition-all hover:scale-105 hover:shadow-lg"
         >
-          {showAdvanced ? '📖 隐藏详情' : '📖 显示详情'}
+          {showAdvanced
+            ? `📖 ${t('tools.colorPicker.hideDetails')}`
+            : `📖 ${t('tools.colorPicker.showDetails')}`}
         </button>
       </div>
 
       {/* 高级控制面板 */}
       {showAdvanced && (
         <div className="bg-linear-to-br rounded-xl from-gray-50 to-gray-100 p-6 shadow-lg dark:from-gray-800 dark:to-gray-900">
-          <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">🎛️ 手动调整</h3>
+          <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
+            🎛️ {t('tools.colorPicker.manualAdjust')}
+          </h3>
           <div className="space-y-4">
             {/* RGB 滑块 */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-red-600">红色 (R)</label>
+              <label className="mb-2 block text-sm font-semibold text-red-600">
+                {t('tools.colorPicker.red')}
+              </label>
               <input
                 type="range"
                 min="0"
@@ -371,7 +389,9 @@ export default function ColorPicker() {
               </div>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-green-600">绿色 (G)</label>
+              <label className="mb-2 block text-sm font-semibold text-green-600">
+                {t('tools.colorPicker.green')}
+              </label>
               <input
                 type="range"
                 min="0"
@@ -385,7 +405,9 @@ export default function ColorPicker() {
               </div>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-semibold text-blue-600">蓝色 (B)</label>
+              <label className="mb-2 block text-sm font-semibold text-blue-600">
+                {t('tools.colorPicker.blue')}
+              </label>
               <input
                 type="range"
                 min="0"
@@ -402,7 +424,7 @@ export default function ColorPicker() {
             {/* HSL 滑块 */}
             <div className="mt-6 border-t border-gray-300 pt-6 dark:border-gray-700">
               <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                色相 (H)
+                {t('tools.colorPicker.hue')}
               </label>
               <input
                 type="range"
@@ -424,7 +446,7 @@ export default function ColorPicker() {
             </div>
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                饱和度 (S)
+                {t('tools.colorPicker.saturation')}
               </label>
               <input
                 type="range"
@@ -446,7 +468,7 @@ export default function ColorPicker() {
             </div>
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                亮度 (L)
+                {t('tools.colorPicker.lightness')}
               </label>
               <input
                 type="range"
@@ -472,7 +494,9 @@ export default function ColorPicker() {
 
       {/* 预设颜色 */}
       <div className="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
-        <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">🎨 预设颜色</h3>
+        <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
+          🎨 {t('tools.colorPicker.presetColors')}
+        </h3>
         <div className="grid gap-3 sm:grid-cols-5 md:grid-cols-10 lg:grid-cols-11">
           {PRESET_COLORS.map((color, index) => (
             <button
@@ -488,7 +512,9 @@ export default function ColorPicker() {
 
       {/* 渐变预设 */}
       <div className="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
-        <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">🌈 渐变预设</h3>
+        <h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
+          🌈 {t('tools.colorPicker.gradientPresets')}
+        </h3>
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
           {GRADIENT_PRESETS.map((gradient, index) => (
             <button
@@ -501,7 +527,9 @@ export default function ColorPicker() {
               title={gradient.name}
             >
               <span className="flex h-full items-center justify-center text-lg font-bold text-white drop-shadow-md">
-                {gradient.name}
+                {t(
+                  `tools.colorPicker.${gradient.name}` as `tools.colorPicker.${typeof gradient.name}`,
+                )}
               </span>
             </button>
           ))}
@@ -512,12 +540,14 @@ export default function ColorPicker() {
       {savedColors.length > 0 && (
         <div className="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">💾 保存的颜色</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+              💾 {t('tools.colorPicker.savedColors')}
+            </h3>
             <button
               onClick={() => setSavedColors([])}
               className="rounded-lg bg-red-500 px-3 py-1 text-sm font-bold text-white transition-all hover:bg-red-600"
             >
-              清空
+              {t('tools.colorPicker.clear')}
             </button>
           </div>
           <div className="grid gap-3 sm:grid-cols-5 md:grid-cols-10">
@@ -534,7 +564,7 @@ export default function ColorPicker() {
                     removeSavedColor(color)
                   }}
                   className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white transition-opacity hover:bg-red-600"
-                  title="删除颜色"
+                  title={t('tools.colorPicker.deleteColor')}
                 >
                   ×
                 </button>
@@ -546,29 +576,17 @@ export default function ColorPicker() {
 
       {/* 使用说明 */}
       <div className="rounded-xl bg-gray-50 p-6 shadow-md dark:bg-gray-800">
-        <h3 className="mb-3 text-lg font-bold text-gray-900 dark:text-white">📖 使用说明</h3>
+        <h3 className="mb-3 text-lg font-bold text-gray-900 dark:text-white">
+          📖 {t('tools.colorPicker.usage')}
+        </h3>
         <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-          <p>
-            • <strong>颜色面板</strong>：在色相饱和度面板中点击选择颜色，使用色相滑块调整色相
-          </p>
-          <p>
-            • <strong>选择颜色</strong>：点击预设颜色或使用滑块手动调整
-          </p>
-          <p>
-            • <strong>格式切换</strong>：在 HEX、RGB、HSL 之间切换显示格式
-          </p>
-          <p>
-            • <strong>复制颜色</strong>：点击复制按钮将颜色代码复制到剪贴板
-          </p>
-          <p>
-            • <strong>随机生成</strong>：点击随机颜色按钮生成随机颜色
-          </p>
-          <p>
-            • <strong>保存颜色</strong>：点击保存按钮将当前颜色保存到收藏夹
-          </p>
-          <p>
-            • <strong>高级调整</strong>：显示详情后可使用 RGB 和 HSL 滑块精确调整
-          </p>
+          <p>{t('tools.colorPicker.usage1')}</p>
+          <p>{t('tools.colorPicker.usage2')}</p>
+          <p>{t('tools.colorPicker.usage3')}</p>
+          <p>{t('tools.colorPicker.usage4')}</p>
+          <p>{t('tools.colorPicker.usage5')}</p>
+          <p>{t('tools.colorPicker.usage6')}</p>
+          <p>{t('tools.colorPicker.usage7')}</p>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 // 游戏常量
 const GRID_WIDTH = 3 // 3列
@@ -20,6 +21,7 @@ interface Block {
 }
 
 export default function NumberStack() {
+  const { t } = useLanguage()
   // 游戏状态
   const [blocks, setBlocks] = useState<Block[]>([])
   const [score, setScore] = useState(0)
@@ -272,11 +274,13 @@ export default function NumberStack() {
       {/* 游戏信息 */}
       <div className="mb-6 grid grid-cols-2 gap-4">
         <div className="rounded-lg bg-blue-100 p-4 text-center dark:bg-blue-900">
-          <p className="text-sm text-gray-600 dark:text-gray-400">分数</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('games.numberStack.score')}</p>
           <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{score}</p>
         </div>
         <div className="rounded-lg bg-purple-100 p-4 text-center dark:bg-purple-900">
-          <p className="text-sm text-gray-600 dark:text-gray-400">最高分</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {t('games.numberStack.highScore')}
+          </p>
           <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{highScore}</p>
         </div>
       </div>
@@ -354,7 +358,9 @@ export default function NumberStack() {
       {/* 下一个方块预览 */}
       {nextBlock && gameStarted && !gameOver && (
         <div className="mb-6 rounded-lg bg-gray-50 p-4 text-center dark:bg-gray-800">
-          <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">下一个方块</p>
+          <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">
+            {t('games.numberStack.nextBlock')}
+          </p>
           <div className="flex justify-center">
             <div
               className={`flex h-16 w-16 items-center justify-center rounded-lg font-bold text-white ${getBlockColor(
@@ -368,7 +374,7 @@ export default function NumberStack() {
             </div>
           </div>
           <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            将放在第 {nextBlock.col + 1} 列
+            {t('games.numberStack.willPlaceInColumn').replace('{col}', String(nextBlock.col + 1))}
           </p>
         </div>
       )}
@@ -376,29 +382,23 @@ export default function NumberStack() {
       {/* 游戏状态提示 */}
       {!gameStarted && !gameOver && (
         <div className="mb-6 rounded-lg bg-blue-50 p-4 text-center dark:bg-blue-900">
-          <p className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">准备好了吗？</p>
-          <p className="text-gray-600 dark:text-gray-400">
-            按{' '}
-            <span className="rounded bg-gray-200 px-2 py-1 font-mono dark:bg-gray-700">空格</span>{' '}
-            或{' '}
-            <span className="rounded bg-gray-200 px-2 py-1 font-mono dark:bg-gray-700">Enter</span>{' '}
-            开始游戏
+          <p className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+            {t('games.numberStack.ready')}
           </p>
+          <p className="text-gray-600 dark:text-gray-400">{t('games.numberStack.pressToStart')}</p>
         </div>
       )}
 
       {gameOver && (
         <div className="mb-6 rounded-lg bg-red-50 p-4 text-center dark:bg-red-900">
-          <p className="mb-2 text-2xl font-bold text-red-600 dark:text-red-400">游戏结束！</p>
+          <p className="mb-2 text-2xl font-bold text-red-600 dark:text-red-400">
+            {t('games.numberStack.gameOver')}
+          </p>
           <p className="mb-3 text-gray-600 dark:text-gray-400">
-            最终分数：<span className="text-lg font-bold">{score}</span>
+            {t('games.numberStack.finalScore').replace('{score}', String(score))}
           </p>
           <p className="text-gray-600 dark:text-gray-400">
-            按{' '}
-            <span className="rounded bg-gray-200 px-2 py-1 font-mono dark:bg-gray-700">空格</span>{' '}
-            或{' '}
-            <span className="rounded bg-gray-200 px-2 py-1 font-mono dark:bg-gray-700">Enter</span>{' '}
-            重新开始
+            {t('games.numberStack.pressToRestart')}
           </p>
         </div>
       )}
@@ -406,14 +406,16 @@ export default function NumberStack() {
       {gameStarted && !gameOver && (
         <div className="mb-6 rounded-lg bg-green-50 p-4 text-center dark:bg-green-900">
           <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-            🎮 游戏进行中...
+            {t('games.numberStack.playing')}
           </p>
         </div>
       )}
 
       {/* 控制按钮（移动端） */}
       <div className="mb-6">
-        <p className="mb-3 text-center text-sm text-gray-600 dark:text-gray-400">点击放置方块</p>
+        <p className="mb-3 text-center text-sm text-gray-600 dark:text-gray-400">
+          {t('games.numberStack.tapToPlace')}
+        </p>
         <div className="grid grid-cols-3 gap-2">
           {Array.from({ length: 3 }).map((_, col) => (
             <button
@@ -426,7 +428,7 @@ export default function NumberStack() {
                   : 'cursor-not-allowed bg-gray-400 opacity-50'
               }`}
             >
-              第 {col + 1} 列
+              {t('games.numberStack.column').replace('{num}', String(col + 1))}
             </button>
           ))}
         </div>
@@ -434,14 +436,16 @@ export default function NumberStack() {
 
       {/* 游戏规则 */}
       <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-800">
-        <h3 className="mb-3 text-lg font-bold text-gray-900 dark:text-white">📖 游戏规则</h3>
+        <h3 className="mb-3 text-lg font-bold text-gray-900 dark:text-white">
+          📖 {t('games.numberStack.rules')}
+        </h3>
         <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-          <li>✅ 点击下方按钮选择列，放置方块</li>
-          <li>✅ 相同数字的方块相邻时会自动合并</li>
-          <li>✅ 合并后的方块数值翻倍，获得分数</li>
-          <li>✅ 黄色虚线是警戒线，超过则游戏结束</li>
-          <li>✅ 合并越多方块，分数越高</li>
-          <li>✅ 挑战自己的最高分！</li>
+          <li>{t('games.numberStack.rule1')}</li>
+          <li>{t('games.numberStack.rule2')}</li>
+          <li>{t('games.numberStack.rule3')}</li>
+          <li>{t('games.numberStack.rule4')}</li>
+          <li>{t('games.numberStack.rule5')}</li>
+          <li>{t('games.numberStack.rule6')}</li>
         </ul>
       </div>
 
@@ -451,7 +455,7 @@ export default function NumberStack() {
           onClick={resetGame}
           className="rounded-lg bg-gray-500 px-6 py-2 font-bold text-white transition-colors hover:bg-gray-600"
         >
-          重置游戏
+          {t('games.numberStack.reset')}
         </button>
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 // 定义方块的形状和颜色
 const SHAPES = [
@@ -73,6 +74,7 @@ interface Tetromino {
 }
 
 const TetrisGame: React.FC = () => {
+  const { t } = useLanguage()
   const [board, setBoard] = useState<(string | null)[][]>(
     Array.from({ length: BOARD_HEIGHT }, () => Array(BOARD_WIDTH).fill(null)),
   )
@@ -272,14 +274,94 @@ const TetrisGame: React.FC = () => {
     while (!checkCollision(currentPiece, { ...newPosition, y: newPosition.y + 1 })) {
       newPosition.y += 1
     }
-    setCurrentPiece({ ...currentPiece, position: newPosition })
-    lockPiece() // 锁定方块
-  }, [currentPiece, gameOver, checkCollision, lockPiece])
+
+    // 直接使用新位置锁定方块
+    const newBoard = [...board]
+    let pieceLocked = false
+
+    for (let y = 0; y < currentPiece.shape.length; y++) {
+      for (let x = 0; x < currentPiece.shape[y].length; x++) {
+        if (currentPiece.shape[y][x] !== 0) {
+          const boardY = newPosition.y + y
+          const boardX = newPosition.x + x
+
+          if (boardY >= 0) {
+            newBoard[boardY][boardX] = currentPiece.color
+          } else {
+            // 如果新方块出现在游戏区域顶部之上，则游戏结束
+            setGameOver(true)
+            setGameStarted(false)
+            pieceLocked = true
+            break
+          }
+        }
+      }
+      if (pieceLocked) break
+    }
+
+    if (!pieceLocked) {
+      setBoard(newBoard)
+      // 清除行后生成新方块（这里不调用 clearLines，因为它会再次读取 board）
+      let linesCleared = 0
+      for (let y = BOARD_HEIGHT - 1; y >= 0; y--) {
+        if (newBoard[y].every(cell => cell !== null)) {
+          newBoard.splice(y, 1)
+          newBoard.unshift(Array(BOARD_WIDTH).fill(null))
+          linesCleared++
+          y++
+        }
+      }
+
+      if (linesCleared > 0) {
+        const points = [40, 100, 300, 1200]
+        setScore(prevScore => prevScore + points[linesCleared - 1] * (gameSpeed / 1000))
+        if (
+          score > 0 &&
+          (score + points[linesCleared - 1] * (gameSpeed / 1000)) % 1000 <
+            linesCleared * points[linesCleared - 1] * (gameSpeed / 1000)
+        ) {
+          setGameSpeed(prevSpeed => Math.max(100, prevSpeed - 50))
+        }
+      }
+
+      // 生成新方块
+      if (nextPiece) {
+        setCurrentPiece(nextPiece)
+        const newNextPiece = createPiece()
+        setNextPiece(newNextPiece)
+
+        if (checkCollision(nextPiece)) {
+          setGameOver(true)
+          setGameStarted(false)
+        }
+      }
+    }
+  }, [currentPiece, gameOver, checkCollision, board, nextPiece, createPiece, gameSpeed, score])
 
   // 处理键盘事件
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!gameStarted || gameOver) return
+
+      // 阻止游戏控制键的默认行为（如空格滚动页面）
+      const gameKeys = [
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowDown',
+        'ArrowUp',
+        ' ',
+        'a',
+        'A',
+        'd',
+        'D',
+        's',
+        'S',
+        'w',
+        'W',
+      ]
+      if (gameKeys.includes(event.key)) {
+        event.preventDefault()
+      }
 
       switch (event.key) {
         case 'ArrowLeft':
@@ -366,7 +448,7 @@ const TetrisGame: React.FC = () => {
 
     return (
       <div className="rounded-lg bg-gray-800 p-4">
-        <h3 className="mb-2 text-lg font-bold text-white">Next Piece</h3>
+        <h3 className="mb-2 text-lg font-bold text-white">{t('games.tetris.nextPiece')}</h3>
         <div className="flex flex-col items-center">
           {nextPiece.shape.map((row, yIndex) => (
             <div key={yIndex} className="flex">
@@ -384,38 +466,109 @@ const TetrisGame: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-4">
-      <h1 className="mb-4 text-4xl font-bold text-white">Tetris</h1>
-      <div className="flex items-center justify-center gap-8">
-        {/* 游戏区域 */}
-        <div className="rounded-lg bg-black p-2 shadow-lg">{renderBoard()}</div>
+    <div className="min-h-screen bg-gray-900 p-2 md:p-4">
+      <div className="flex flex-col items-center">
+        <h1 className="mb-2 text-2xl font-bold text-white md:mb-4 md:text-4xl">
+          {t('games.tetris.title')}
+        </h1>
 
-        {/* 侧边栏 - 下一个方块和分数 */}
-        <div className="flex flex-col gap-4">
-          {renderNextPiece()}
-          <div className="rounded-lg bg-gray-800 p-4">
-            <h3 className="mb-2 text-lg font-bold text-white">Score</h3>
-            <p className="text-2xl text-white">{score}</p>
+        {/* 游戏主区域 */}
+        <div className="flex w-full max-w-4xl flex-col items-center gap-4 md:flex-row md:justify-center md:gap-8">
+          {/* 游戏区域 */}
+          <div className="rounded-lg bg-black p-2 shadow-lg">{renderBoard()}</div>
+
+          {/* 侧边栏 - 下一个方块和分数 */}
+          <div className="flex w-full flex-col gap-3 md:w-auto md:gap-4">
+            {renderNextPiece()}
+            <div className="rounded-lg bg-gray-800 p-3 md:p-4">
+              <h3 className="mb-1 text-sm font-bold text-white md:mb-2 md:text-lg">
+                {t('games.tetris.score')}
+              </h3>
+              <p className="text-xl text-white md:text-2xl">{score}</p>
+            </div>
+            <button
+              onClick={initGame}
+              className="rounded bg-blue-500 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700 md:px-4 md:py-2"
+            >
+              {gameOver
+                ? t('games.tetris.restart')
+                : gameStarted
+                  ? t('games.tetris.restart')
+                  : t('games.tetris.startGame')}
+            </button>
+            {gameOver && (
+              <p className="text-lg font-bold text-red-500 md:text-xl">
+                {t('games.tetris.gameOver')}
+              </p>
+            )}
           </div>
-          <button
-            onClick={initGame}
-            className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-          >
-            {gameOver ? 'Restart Game' : gameStarted ? 'Restart' : 'Start Game'}
-          </button>
-          {gameOver && <p className="text-xl font-bold text-red-500">Game Over!</p>}
         </div>
-      </div>
 
-      {/* 操作说明 */}
-      <div className="mt-8 text-center text-white">
-        <p>
-          <span className="font-mono">←</span> <span className="font-mono">→</span> /{' '}
-          <span className="font-mono">A</span> <span className="font-mono">D</span> : Move |{' '}
-          <span className="font-mono">↓</span> / <span className="font-mono">S</span> : Soft Drop |{' '}
-          <span className="font-mono">↑</span> / <span className="font-mono">W</span> : Rotate |{' '}
-          <span className="font-mono">Space</span> : Hard Drop
-        </p>
+        {/* 移动端控制按钮 */}
+        <div className="mt-4 w-full md:hidden" style={{ touchAction: 'manipulation' }}>
+          <div className="flex flex-col items-center gap-2">
+            {/* 旋转按钮 */}
+            <button
+              onClick={rotatePiece}
+              onTouchStart={e => {
+                e.preventDefault()
+                rotatePiece()
+              }}
+              className="flex h-16 w-16 select-none items-center justify-center rounded-full bg-purple-600 text-3xl font-bold text-white shadow-lg active:scale-95 active:bg-purple-700"
+            >
+              ↻
+            </button>
+
+            {/* 方向按钮 */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => movePiece('left')}
+                onTouchStart={e => {
+                  e.preventDefault()
+                  movePiece('left')
+                }}
+                className="flex h-16 w-16 select-none items-center justify-center rounded-full bg-blue-600 text-3xl font-bold text-white shadow-lg active:scale-95 active:bg-blue-700"
+              >
+                ←
+              </button>
+              <button
+                onClick={() => movePiece('down')}
+                onTouchStart={e => {
+                  e.preventDefault()
+                  movePiece('down')
+                }}
+                className="flex h-16 w-16 select-none items-center justify-center rounded-full bg-green-600 text-3xl font-bold text-white shadow-lg active:scale-95 active:bg-green-700"
+              >
+                ↓
+              </button>
+              <button
+                onClick={() => movePiece('right')}
+                onTouchStart={e => {
+                  e.preventDefault()
+                  movePiece('right')
+                }}
+                className="flex h-16 w-16 select-none items-center justify-center rounded-full bg-blue-600 text-3xl font-bold text-white shadow-lg active:scale-95 active:bg-blue-700"
+              >
+                →
+              </button>
+              <button
+                onClick={hardDrop}
+                onTouchStart={e => {
+                  e.preventDefault()
+                  hardDrop()
+                }}
+                className="flex h-16 w-20 select-none items-center justify-center rounded-full bg-red-600 text-lg font-bold text-white shadow-lg active:scale-95 active:bg-red-700"
+              >
+                硬降
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 桌面端操作说明 */}
+        <div className="mt-4 hidden text-center text-white md:block">
+          <p>{t('games.tetris.controls')}</p>
+        </div>
       </div>
     </div>
   )

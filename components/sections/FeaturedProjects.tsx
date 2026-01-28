@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import ProjectCard from '@/components/common/ProjectCard'
 import { sql } from '@/lib/db'
+import { Project } from '@/types'
 
 async function getFeaturedProjects() {
   const projects = await sql`
@@ -8,7 +9,8 @@ async function getFeaturedProjects() {
     ORDER BY created_at DESC 
     LIMIT 3
   `
-  return projects || []
+  // Cast each project to Project type
+  return (projects as Project[]) || []
 }
 
 export default async function FeaturedProjects() {
@@ -28,7 +30,7 @@ export default async function FeaturedProjects() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects.map((project: any) => (
+          {featuredProjects.map((project: Project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>

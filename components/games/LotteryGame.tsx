@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 // 类型定义
 interface LotteryTicket {
@@ -54,6 +55,7 @@ const PRIZE_LEVELS = [
 const TICKET_PRICE = 2
 
 export default function LotteryGame() {
+  const { t } = useLanguage()
   const [tickets, setTickets] = useState<LotteryTicket[]>([])
   const [drawCount, setDrawCount] = useState(1)
   const [drawResults, setDrawResults] = useState<DrawResult[]>([])
@@ -274,7 +276,9 @@ export default function LotteryGame() {
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4">
       {/* 操作面板 */}
       <div className="bg-linear-to-br grid gap-4 rounded-xl from-red-50 to-orange-50 p-6 shadow-lg dark:from-red-900/20 dark:to-orange-900/20">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white">📝 号码选择</h3>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+          {t('games.lottery.numberSelection')}
+        </h3>
 
         {/* 随机生成区域 */}
         <div className="grid gap-3 md:grid-cols-2">
@@ -283,19 +287,19 @@ export default function LotteryGame() {
               onClick={addRandomTicket}
               className="rounded-lg bg-red-500 px-4 py-2 font-bold text-white transition-all hover:scale-105 hover:bg-red-600"
             >
-              随机生成1注
+              {t('games.lottery.random1')}
             </button>
             <button
               onClick={() => addMultipleRandomTickets(5)}
               className="rounded-lg bg-red-500 px-4 py-2 font-bold text-white transition-all hover:scale-105 hover:bg-red-600"
             >
-              随机生成5注
+              {t('games.lottery.random5')}
             </button>
             <button
               onClick={() => addMultipleRandomTickets(10)}
               className="rounded-lg bg-red-500 px-4 py-2 font-bold text-white transition-all hover:scale-105 hover:bg-red-600"
             >
-              随机生成10注
+              {t('games.lottery.random10')}
             </button>
           </div>
           <div className="flex items-center gap-2">
@@ -312,7 +316,7 @@ export default function LotteryGame() {
               onClick={() => addMultipleRandomTickets(drawCount)}
               className="rounded-lg bg-orange-500 px-4 py-2 font-bold text-white transition-all hover:scale-105 hover:bg-orange-600"
             >
-              自定义生成
+              {t('games.lottery.customGenerate')}
             </button>
           </div>
         </div>
@@ -322,7 +326,7 @@ export default function LotteryGame() {
           onClick={() => setShowManualInput(!showManualInput)}
           className="rounded-lg bg-indigo-500 px-4 py-2 font-bold text-white transition-all hover:scale-105 hover:bg-indigo-600"
         >
-          {showManualInput ? '收起手动输入' : '手动输入号码'}
+          {showManualInput ? t('games.lottery.hideManual') : t('games.lottery.showManual')}
         </button>
 
         {/* 手动输入区域 */}
@@ -332,13 +336,16 @@ export default function LotteryGame() {
             <div className="mb-4">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  红球选择 (已选 {selectedRedBalls.length}/6)
+                  {t('games.lottery.redBallSelection').replace(
+                    '{count}',
+                    String(selectedRedBalls.length),
+                  )}
                 </span>
                 <button
                   onClick={() => setSelectedRedBalls([])}
                   className="text-xs text-red-500 hover:text-red-700"
                 >
-                  清空选择
+                  {t('games.lottery.clearSelection')}
                 </button>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -362,13 +369,16 @@ export default function LotteryGame() {
             <div className="mb-4">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  蓝球选择 (已选 {selectedBlueBall ? '1' : '0'}/1)
+                  {t('games.lottery.blueBallSelection').replace(
+                    '{count}',
+                    selectedBlueBall ? '1' : '0',
+                  )}
                 </span>
                 <button
                   onClick={() => setSelectedBlueBall(null)}
                   className="text-xs text-blue-500 hover:text-blue-700"
                 >
-                  清空选择
+                  {t('games.lottery.clearSelection')}
                 </button>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -394,7 +404,7 @@ export default function LotteryGame() {
               disabled={selectedRedBalls.length !== 6 || selectedBlueBall === null}
               className="w-full rounded-lg bg-green-500 px-4 py-3 font-bold text-white transition-all hover:scale-105 hover:bg-green-600 disabled:bg-gray-400 disabled:hover:scale-100"
             >
-              添加手动选择的号码
+              {t('games.lottery.addManual')}
             </button>
           </div>
         )}
@@ -403,7 +413,7 @@ export default function LotteryGame() {
           onClick={clearTickets}
           className="rounded-lg bg-gray-500 px-4 py-2 font-bold text-white transition-all hover:bg-gray-600"
         >
-          清空所有号码
+          {t('games.lottery.clearAll')}
         </button>
       </div>
 
@@ -412,10 +422,13 @@ export default function LotteryGame() {
         <div className="rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              🎫 已选号码 ({tickets.length}注)
+              {t('games.lottery.selectedNumbers').replace('{count}', String(tickets.length))}
             </h3>
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              总投入: {tickets.length * TICKET_PRICE * (drawResults.length || 1)}元
+              {t('games.lottery.totalCost').replace(
+                '{amount}',
+                String(tickets.length * TICKET_PRICE * (drawResults.length || 1)),
+              )}
             </span>
           </div>
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -468,14 +481,14 @@ export default function LotteryGame() {
             disabled={tickets.length === 0 || isSimulating}
             className="rounded-lg bg-blue-500 px-6 py-2 font-bold text-white transition-all hover:scale-105 hover:bg-blue-600 disabled:bg-gray-400 disabled:hover:scale-100"
           >
-            单次开奖
+            {t('games.lottery.singleDraw')}
           </button>
           <button
             onClick={simulateMultipleDraws}
             disabled={tickets.length === 0 || isSimulating}
             className="rounded-lg bg-purple-500 px-6 py-2 font-bold text-white transition-all hover:scale-105 hover:bg-purple-600 disabled:bg-gray-400 disabled:hover:scale-100"
           >
-            模拟{drawCount}次开奖
+            {t('games.lottery.multipleDraws').replace('{count}', String(drawCount))}
           </button>
           <input
             type="number"
@@ -487,7 +500,7 @@ export default function LotteryGame() {
           />
           {isSimulating && (
             <span className="flex items-center text-sm text-blue-600 dark:text-blue-400">
-              ⏳ 正在模拟中...
+              {t('games.lottery.simulating')}
             </span>
           )}
         </div>

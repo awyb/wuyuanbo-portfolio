@@ -2,18 +2,21 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
+import LanguageSwitcher from '@/components/common/LanguageSwitcher'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const { t } = useLanguage()
 
   const navItems = [
-    { label: '首页', href: '/' },
-    { label: '作品', href: '/projects' },
-    { label: '技能', href: '/skills' },
-    { label: '博客', href: '/blog' },
-    { label: '工具', href: '/tools' },
-    { label: '游戏', href: '/games' },
-    { label: '关于', href: '/about' },
+    { labelKey: 'nav.home', href: '/' },
+    { labelKey: 'nav.projects', href: '/projects' },
+    { labelKey: 'nav.skills', href: '/skills' },
+    { labelKey: 'nav.blog', href: '/blog' },
+    { labelKey: 'nav.tools', href: '/tools' },
+    { labelKey: 'nav.games', href: '/games' },
+    { labelKey: 'nav.about', href: '/about' },
   ]
 
   return (
@@ -28,20 +31,22 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden space-x-1 md:flex">
+          <div className="hidden items-center space-x-1 md:flex">
             {navItems.map(item => (
               <Link
                 key={item.href}
                 href={item.href}
                 className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
+            <LanguageSwitcher />
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="flex items-center gap-2 md:hidden">
+            <LanguageSwitcher />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
@@ -68,7 +73,7 @@ export default function Navbar() {
                 className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
                 onClick={() => setIsOpen(false)}
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             ))}
           </div>
