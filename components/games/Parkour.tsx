@@ -36,15 +36,26 @@ const OBSTACLE_SPAWN_RATE = 120 // frames
 
 export default function Parkour() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | undefined>(undefined)
   const frameCountRef = useRef(0)
 
   const [gameState, setGameState] = useState<GameState>({
     isRunning: false,
     isGameOver: false,
     score: 0,
-    highScore: Number.parseInt(localStorage.getItem('parkourHighScore') || '0', 10),
+    highScore: 0,
   })
+
+  // Load high score from localStorage on mount
+  useEffect(() => {
+    const savedHighScore = localStorage.getItem('parkourHighScore')
+    if (savedHighScore) {
+      setGameState(prev => ({
+        ...prev,
+        highScore: Number.parseInt(savedHighScore, 10),
+      }))
+    }
+  }, [])
 
   const playerRef = useRef<Player>({
     x: 100,
