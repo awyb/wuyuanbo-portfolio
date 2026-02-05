@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 interface CodeBlockProps {
   children: React.ReactNode
@@ -12,11 +12,25 @@ export default function CodeBlock({ children, className = '', language = 'code' 
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
-    const codeElement = children as React.ReactElement
-    const codeText = codeElement?.props?.children || ''
+    let codeText = ''
+
+    // 尝试从React元素中提取文本内容
+    if (React.isValidElement(children)) {
+      const childProps = children.props as { children?: React.ReactNode }
+      if (typeof childProps.children === 'string') {
+        codeText = childProps.children
+      } else if (typeof childProps.children === 'object' && childProps.children) {
+        // 处理嵌套的情况
+        codeText = String(childProps.children)
+      }
+    } else if (typeof children === 'string') {
+      codeText = children
+    } else {
+      codeText = String(children)
+    }
 
     try {
-      await navigator.clipboard.writeText(String(codeText))
+      await navigator.clipboard.writeText(codeText)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {

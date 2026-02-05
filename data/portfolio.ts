@@ -191,6 +191,14 @@ export const tools: Tool[] = [
     category: 'game',
   },
   {
+    id: '17',
+    title: '2048',
+    description: '经典2048数字合并游戏，挑战2048',
+    icon: '🎯',
+    link: '/games/2048',
+    category: 'game',
+  },
+  {
     id: '11',
     title: '跑酷游戏',
     description: '刺激的跑酷游戏，躲避障碍物，挑战最高分',
