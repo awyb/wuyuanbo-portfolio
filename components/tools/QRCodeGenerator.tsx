@@ -24,7 +24,7 @@ const QRCodeGenerator: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 dark:from-gray-900 dark:to-gray-800">
+    <div className="bg-linear-to-br min-h-screen from-purple-50 to-pink-100 p-4 dark:from-gray-900 dark:to-gray-800">
       <div className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
         <h1 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
           {t('tools.qrCodeGenerator.title')}
@@ -48,7 +48,7 @@ const QRCodeGenerator: React.FC = () => {
         <div className="mb-6 flex gap-4">
           <button
             onClick={generateQRCode}
-            className="flex-1 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-bold text-white shadow-lg transition-all hover:from-purple-700 hover:to-pink-700"
+            className="bg-linear-to-r flex-1 rounded-lg from-purple-600 to-pink-600 px-6 py-3 font-bold text-white shadow-lg transition-all hover:from-purple-700 hover:to-pink-700"
           >
             {t('tools.qrCodeGenerator.generate')}
           </button>

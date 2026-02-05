@@ -262,15 +262,17 @@ export default function LotteryGame() {
   const ticketStats = calculateTicketStats()
 
   // 过滤开奖结果
-  const filteredResults = drawResults.map(result => ({
-    ...result,
-    prizes: result.prizes.filter(prize => {
-      if (filterPrize === 'all') return true
-      if (filterPrize === 'win') return prize.amount > 0
-      if (filterPrize === 'lose') return prize.amount === 0
-      return prize.prize === filterPrize
-    }),
-  }))
+  const filteredResults = drawResults
+    .map(result => ({
+      ...result,
+      prizes: result.prizes.filter(prize => {
+        if (filterPrize === 'all') return true
+        if (filterPrize === 'win') return prize.amount > 0
+        if (filterPrize === 'lose') return prize.amount === 0
+        return prize.prize === filterPrize
+      }),
+    }))
+    .filter(result => result.prizes.length > 0)
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4">
@@ -610,67 +612,81 @@ export default function LotteryGame() {
             </div>
           </div>
           <div className="max-h-96 space-y-4 overflow-y-auto">
-            {filteredResults.map((result, index) => (
-              <div
-                key={index}
-                className="bg-linear-to-r rounded-lg from-yellow-50 to-orange-50 p-4 dark:from-yellow-900/20 dark:to-orange-900/20"
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="font-bold text-gray-900 dark:text-white">
-                    第{index + 1}次开奖
-                  </span>
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    当次收益: ¥{result.prizes.reduce((sum, prize) => sum + prize.amount, 0)}
-                  </span>
-                </div>
-                <div className="mb-3 flex flex-wrap gap-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">开奖号码:</span>
-                  {result.redBalls.map((ball, i) => (
-                    <div
-                      key={`draw-red-${i}`}
-                      className="flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
-                    >
-                      {ball < 10 ? `0${ball}` : ball}
+            {filteredResults.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="mb-4 text-6xl">🔍</div>
+                <h4 className="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
+                  没有找到符合条件的开奖结果
+                </h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {filterPrize === 'all'
+                    ? '暂无开奖结果'
+                    : `当前过滤条件下没有任何${filterPrize === 'win' ? '中奖' : filterPrize === 'lose' ? '未中奖' : filterPrize}记录`}
+                </p>
+              </div>
+            ) : (
+              filteredResults.map((result, index) => (
+                <div
+                  key={index}
+                  className="bg-linear-to-r rounded-lg from-yellow-50 to-orange-50 p-4 dark:from-yellow-900/20 dark:to-orange-900/20"
+                >
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="font-bold text-gray-900 dark:text-white">
+                      第{index + 1}次开奖
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      当次收益: ¥{result.prizes.reduce((sum, prize) => sum + prize.amount, 0)}
+                    </span>
+                  </div>
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">开奖号码:</span>
+                    {result.redBalls.map((ball, i) => (
+                      <div
+                        key={`draw-red-${i}`}
+                        className="flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
+                      >
+                        {ball < 10 ? `0${ball}` : ball}
+                      </div>
+                    ))}
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
+                      {result.blueBall < 10 ? `0${result.blueBall}` : result.blueBall}
                     </div>
-                  ))}
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white">
-                    {result.blueBall < 10 ? `0${result.blueBall}` : result.blueBall}
+                  </div>
+                  <div className="space-y-2">
+                    {result.prizes.map(prize => {
+                      const ticket = tickets.find(t => t.id === prize.ticketId)
+                      const ticketIndex = tickets.indexOf(ticket!)
+                      return (
+                        <div
+                          key={prize.ticketId}
+                          className={`rounded-lg p-3 ${
+                            prize.amount > 0
+                              ? 'bg-green-100 dark:bg-green-900/30'
+                              : 'bg-gray-100 dark:bg-gray-700'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              第{ticketIndex + 1}注: {prize.redMatches}红
+                              {prize.blueMatch ? '+蓝' : ''}
+                            </span>
+                            <span
+                              className={`font-bold ${
+                                prize.amount > 0
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-gray-600 dark:text-gray-400'
+                              }`}
+                            >
+                              {prize.prize} {prize.amount > 0 && `(¥${prize.amount})`}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  {result.prizes.map(prize => {
-                    const ticket = tickets.find(t => t.id === prize.ticketId)
-                    const ticketIndex = tickets.indexOf(ticket!)
-                    return (
-                      <div
-                        key={prize.ticketId}
-                        className={`rounded-lg p-3 ${
-                          prize.amount > 0
-                            ? 'bg-green-100 dark:bg-green-900/30'
-                            : 'bg-gray-100 dark:bg-gray-700'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                            第{ticketIndex + 1}注: {prize.redMatches}红
-                            {prize.blueMatch ? '+蓝' : ''}
-                          </span>
-                          <span
-                            className={`font-bold ${
-                              prize.amount > 0
-                                ? 'text-green-600 dark:text-green-400'
-                                : 'text-gray-600 dark:text-gray-400'
-                            }`}
-                          >
-                            {prize.prize} {prize.amount > 0 && `(¥${prize.amount})`}
-                          </span>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       )}

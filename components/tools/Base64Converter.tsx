@@ -53,7 +53,7 @@ const Base64Converter: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-100 p-4 dark:from-gray-900 dark:to-gray-800">
+    <div className="bg-linear-to-br min-h-screen from-orange-50 to-yellow-100 p-4 dark:from-gray-900 dark:to-gray-800">
       <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
         <h1 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
           {t('tools.base64Converter.title')}
@@ -65,7 +65,7 @@ const Base64Converter: React.FC = () => {
             onClick={() => setMode('encode')}
             className={`flex-1 rounded-lg px-6 py-3 font-bold transition-all ${
               mode === 'encode'
-                ? 'bg-gradient-to-r from-orange-600 to-yellow-600 text-white shadow-lg'
+                ? 'bg-linear-to-r from-orange-600 to-yellow-600 text-white shadow-lg'
                 : 'border-2 border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600'
             }`}
           >
@@ -75,7 +75,7 @@ const Base64Converter: React.FC = () => {
             onClick={() => setMode('decode')}
             className={`flex-1 rounded-lg px-6 py-3 font-bold transition-all ${
               mode === 'decode'
-                ? 'bg-gradient-to-r from-orange-600 to-yellow-600 text-white shadow-lg'
+                ? 'bg-linear-to-r from-orange-600 to-yellow-600 text-white shadow-lg'
                 : 'border-2 border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600'
             }`}
           >
@@ -107,7 +107,7 @@ const Base64Converter: React.FC = () => {
         <div className="mb-4 flex gap-4">
           <button
             onClick={handleConvert}
-            className="flex-1 rounded-lg bg-gradient-to-r from-orange-600 to-yellow-600 px-6 py-3 font-bold text-white shadow-lg transition-all hover:from-orange-700 hover:to-yellow-700"
+            className="bg-linear-to-r flex-1 rounded-lg from-orange-600 to-yellow-600 px-6 py-3 font-bold text-white shadow-lg transition-all hover:from-orange-700 hover:to-yellow-700"
           >
             {t('tools.base64Converter.convert')}
           </button>

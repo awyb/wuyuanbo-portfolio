@@ -1,4 +1,4 @@
-export default {
+const enUS = {
   common: {
     contact: 'Contact Me',
     viewWorks: 'View My Works',
@@ -16,6 +16,7 @@ export default {
     blog: 'Blog',
     tools: 'Tools',
     games: 'Games',
+    resources: 'Resources',
     about: 'About',
   },
   hero: {
@@ -215,22 +216,21 @@ export default {
       random1: 'Random 1 Ticket',
       random5: 'Random 5 Tickets',
       random10: 'Random 10 Tickets',
-      custom: 'Custom Generate',
+      customGenerate: 'Generate',
       tickets: 'tickets',
       manualInput: 'Manual Input',
       hideManual: 'Hide Manual',
       showManual: 'Show Manual Input',
-      redSelect: 'Red Ball Selection (Selected',
-      clear: 'Clear Selection',
-      blueSelect: 'Blue Ball Selection (Selected',
+      redBallSelection: 'Red Ball Selection (Selected {count}/6)',
+      clearSelection: 'Clear Selection',
+      blueBallSelection: 'Blue Ball Selection (Selected {count}/1)',
       addManual: 'Add Manually Selected Numbers',
       clearAll: 'Clear All Numbers',
-      selectedNumbers: 'Selected Numbers',
-      totalCost: 'Total Cost',
+      selectedNumbers: 'Selected Numbers ({count} tickets)',
+      totalCost: 'Total Cost: ¥{amount}',
       drawSimulation: 'Draw Simulation',
       singleDraw: 'Single Draw',
-      simulateDraws: 'Simulate',
-      timesDraw: 'times draw',
+      multipleDraws: 'Simulate {count} Draws',
       simulating: 'Simulating...',
       profitStats: 'Profit Statistics',
       totalRevenue: 'Total Revenue',
@@ -303,3 +303,5 @@ export default {
     allRightsReserved: 'All rights reserved',
   },
 }
+
+export default enUS

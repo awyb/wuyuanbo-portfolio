@@ -16,6 +16,7 @@ export default function Navbar() {
     { labelKey: 'nav.blog', href: '/blog' },
     { labelKey: 'nav.tools', href: '/tools' },
     { labelKey: 'nav.games', href: '/games' },
+    { labelKey: 'nav.resources', href: '/resources' },
     { labelKey: 'nav.about', href: '/about' },
   ]
 

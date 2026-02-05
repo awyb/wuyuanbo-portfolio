@@ -100,7 +100,7 @@ const RegexTester: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800">
+    <div className="bg-linear-to-br min-h-screen from-green-50 to-teal-100 p-4 dark:from-gray-900 dark:to-gray-800">
       <div className="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
         <h1 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
           {t('tools.regexTester.title')}

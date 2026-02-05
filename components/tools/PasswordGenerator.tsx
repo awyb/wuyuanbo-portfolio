@@ -41,7 +41,7 @@ const PasswordGenerator: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 dark:from-gray-900 dark:to-gray-800">
+    <div className="bg-linear-to-br min-h-screen from-blue-50 to-indigo-100 p-4 dark:from-gray-900 dark:to-gray-800">
       <div className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
         <h1 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
           {t('tools.passwordGenerator.title')}
@@ -144,7 +144,7 @@ const PasswordGenerator: React.FC = () => {
         {/* 生成按钮 */}
         <button
           onClick={generatePassword}
-          className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 font-bold text-white shadow-lg transition-all hover:from-blue-700 hover:to-indigo-700"
+          className="bg-linear-to-r w-full rounded-lg from-blue-600 to-indigo-600 px-6 py-3 font-bold text-white shadow-lg transition-all hover:from-blue-700 hover:to-indigo-700"
         >
           {t('tools.passwordGenerator.generate')}
         </button>

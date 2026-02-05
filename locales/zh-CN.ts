@@ -1,4 +1,4 @@
-export default {
+const zhCN = {
   common: {
     contact: '联系我',
     viewWorks: '查看我的作品',
@@ -16,6 +16,7 @@ export default {
     blog: '博客',
     tools: '工具',
     games: '游戏',
+    resources: '资源',
     about: '关于',
   },
   hero: {
@@ -214,24 +215,23 @@ export default {
       random1: '随机生成1注',
       random5: '随机生成5注',
       random10: '随机生成10注',
-      custom: '自定义生成',
+      customGenerate: '生成',
       tickets: '注',
       manualInput: '手动输入',
       hideManual: '收起手动输入',
       showManual: '显示手动输入',
-      redSelect: '红球选择 (已选',
-      clear: '清空选择',
-      blueSelect: '蓝球选择 (已选',
+      redBallSelection: '红球选择 (已选 {count}/6)',
+      clearSelection: '清空选择',
+      blueBallSelection: '蓝球选择 (已选 {count}/1)',
       addManual: '添加手动选择的号码',
       clearAll: '清空所有号码',
-      selectedNumbers: '已选号码',
+      selectedNumbers: '已选号码 ({count} 注)',
+      totalCost: '总投入: ¥{amount}',
       drawSimulation: '开奖模拟',
       singleDraw: '单次开奖',
-      simulateDraws: '模拟',
-      timesDraw: '次开奖',
+      multipleDraws: '模拟 {count} 次开奖',
       simulating: '正在模拟中...',
       profitStats: '收益统计',
-      totalCost: '总投入',
       totalRevenue: '总收益',
       profit: '盈亏',
       averageReturn: '平均收益率',
@@ -302,3 +302,5 @@ export default {
     allRightsReserved: '保留所有权利',
   },
 }
+
+export default zhCN
